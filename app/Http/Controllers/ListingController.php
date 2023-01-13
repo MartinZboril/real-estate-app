@@ -13,7 +13,7 @@ class ListingController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {       
+    {
         return inertia(
             'Listing/Index',
             [
@@ -60,7 +60,7 @@ class ListingController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  Listing  $listing
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show(Listing $listing)
@@ -73,12 +73,6 @@ class ListingController extends Controller
         );
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  Listing  $listing
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Listing $listing)
     {
         return inertia(
@@ -89,13 +83,6 @@ class ListingController extends Controller
         );
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  Listing  $listing
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Listing $listing)
     {
         $listing->update(
@@ -112,20 +99,15 @@ class ListingController extends Controller
         );
 
         return redirect()->route('listing.index')
-            ->with('success', 'Listing was updated!');
+            ->with('message', 'Listing was changed!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  Listing  $listing
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy(Listing $listing)
     {
         $listing->delete();
 
         return redirect()->back()
-            ->with('success', 'Listing was deleted!');
+            ->with('message', 'Listing was deleted!');
     }
 }
