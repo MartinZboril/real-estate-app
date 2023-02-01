@@ -6,13 +6,18 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Listing extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'beds', 'baths', 'area', 'city', 'code', 'street', 'street_nr', 'price'
+    ];
+
+    protected $sortable = [
+        'price', 'created_at'
     ];
 
     public function owner(): BelongsTo
@@ -21,6 +26,11 @@ class Listing extends Model
             \App\Models\User::class,
             'by_user_id'
         );
+    }
+
+    public function scopeMostRecent(Builder $query): Builder
+    {
+        return $query->orderByDesc('created_at');
     }
 
     public function scopeFilter(Builder $query, array $filters): Builder
@@ -43,6 +53,15 @@ class Listing extends Model
         )->when(
             $filters['areaTo'] ?? false,
             fn ($query, $value) => $query->where('area', '<=', $value)
+        )->when(
+            $filters['deleted'] ?? false,
+            fn ($query, $value) => $query->withTrashed()
+        )->when(
+            $filters['by'] ?? false,
+            fn($query, $value) =>
+            !in_array($value, $this->sortable)
+                ? $query
+                : $query->orderBy($value, $filters['order'] ?? 'desc')
         );
     }
 }
