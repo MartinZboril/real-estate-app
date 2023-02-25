@@ -28,9 +28,15 @@ class RealtorListingController extends Controller
                 ->listings()
                 ->filter($filters)
                 ->withCount('images')
+                ->withCount('offers')
                 ->paginate(5)
                 ->withQueryString()
             ]);
+    }
+
+    public function show(Listing $listing)
+    {
+        return inertia('Realtor/Show', ['listing' => $listing->load('offers', 'offers.bidder')]);
     }
     
     /**
@@ -65,7 +71,7 @@ class RealtorListingController extends Controller
         );
 
         return redirect()->route('realtor.listing.index')
-            ->with('success', 'Listing was created!');
+            ->with('message', 'Listing was created!');
     }
 
     public function edit(Listing $listing)
